@@ -900,20 +900,33 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN ADAPTATIONS
+   RESPONSIVE DESIGN & MOBILE OPTIMIZATIONS
    ========================================================================== */
 
+/* Touch & Interaction defaults */
+button, input, select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Tablet Screens (<= 900px) */
 @media (max-width: 900px) {
   .simulation-stage {
-    min-height: 620px;
+    min-height: 540px;
+    padding: 30px 15px;
   }
   
   .stage-grid {
-    height: 560px;
+    height: 480px;
   }
   
   .user-card {
-    width: 170px;
+    width: 180px;
     padding: 12px;
   }
   
@@ -923,14 +936,394 @@ input[type="range"]::-webkit-slider-thumb {
   .user-card[data-user="4"] { bottom: 10px; right: 10px; }
   
   .cpu-node {
-    width: 180px;
-    height: 180px;
+    width: 170px;
+    height: 170px;
   }
 
   .quantum-ring-container {
-    top: -12px;
-    left: -12px;
-    width: 204px;
-    height: 204px;
+    top: -10px;
+    left: -10px;
+    width: 190px;
+    height: 190px;
+  }
+
+  .cpu-icon {
+    font-size: 34px;
+  }
+
+  .cpu-title {
+    font-size: 0.85rem;
   }
 }
+
+/* Mobile Screens (<= 680px) */
+@media (max-width: 680px) {
+  .app-container {
+    padding: 12px 10px;
+    gap: 16px;
+  }
+
+  /* Header adjustments */
+  .app-header {
+    padding: 14px 16px;
+    border-radius: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-title-box {
+    gap: 12px;
+  }
+
+  .header-icon-badge {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    border-radius: 12px;
+  }
+
+  .header-text h1 {
+    font-size: 1.25rem;
+  }
+
+  .header-text p {
+    font-size: 0.78rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    min-height: 44px;
+    font-size: 0.8rem;
+  }
+
+  /* Metrics Strip 2-Column Grid */
+  .metrics-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .metric-card {
+    padding: 10px 12px;
+    border-radius: 12px;
+    gap: 10px;
+  }
+
+  .metric-card.span-full-mobile {
+    grid-column: span 2;
+  }
+
+  .metric-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    border-radius: 10px;
+  }
+
+  .metric-info label {
+    font-size: 0.65rem;
+  }
+
+  .metric-info .metric-value {
+    font-size: 0.95rem;
+  }
+
+  /* Main Interactive Stage on Mobile */
+  .simulation-stage {
+    min-height: 480px;
+    padding: 16px 8px;
+    border-radius: 18px;
+  }
+
+  .stage-grid {
+    height: 440px;
+  }
+
+  /* Compact Central CPU Node */
+  .cpu-node {
+    width: 140px;
+    height: 140px;
+  }
+
+  .cpu-icon {
+    font-size: 26px;
+    margin-bottom: 0;
+  }
+
+  .cpu-title {
+    font-size: 0.7rem;
+  }
+
+  .cpu-subtitle {
+    font-size: 0.55rem;
+    margin-bottom: 2px;
+  }
+
+  .cpu-serving-badge {
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    margin-top: 2px;
+  }
+
+  .quantum-ring-container {
+    top: -8px;
+    left: -8px;
+    width: 156px;
+    height: 156px;
+  }
+
+  /* Compact Mobile User Cards */
+  .user-card {
+    width: 142px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border-width: 1.5px;
+    gap: 4px;
+  }
+
+  .user-card[data-user="1"] { top: 6px; left: 4px; }
+  .user-card[data-user="2"] { top: 6px; right: 4px; }
+  .user-card[data-user="3"] { bottom: 6px; left: 4px; }
+  .user-card[data-user="4"] { bottom: 6px; right: 4px; }
+
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .user-name {
+    font-size: 0.78rem;
+  }
+
+  .user-badge {
+    font-size: 0.58rem;
+    padding: 2px 5px;
+    border-radius: 8px;
+  }
+
+  .user-action-box {
+    padding: 5px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .user-action-icon {
+    font-size: 15px;
+  }
+
+  .user-action-text {
+    font-size: 0.68rem;
+    line-height: 1.15;
+  }
+
+  .user-toast-message {
+    font-size: 0.64rem;
+    padding: 3px 5px;
+    border-radius: 6px;
+  }
+
+  .flying-packet {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+
+  /* Controls Panel Mobile Layout */
+  .controls-panel {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 14px;
+  }
+
+  .controls-top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .control-buttons-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-primary, .btn-secondary, .btn-danger {
+    justify-content: center;
+    padding: 12px 10px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    min-height: 46px;
+    width: 100%;
+  }
+
+  .settings-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  .setting-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .setting-item label {
+    font-size: 0.8rem;
+  }
+
+  .quantum-slider-container {
+    width: 100%;
+    gap: 12px;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    width: 100%;
+    height: 8px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  .speed-selector {
+    width: 100%;
+  }
+
+  .speed-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 0.78rem;
+    min-height: 38px;
+  }
+
+  /* Gantt Chart Mobile */
+  .gantt-section {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .gantt-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .gantt-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .gantt-legend {
+    gap: 8px 12px;
+  }
+
+  .legend-item {
+    font-size: 0.7rem;
+  }
+
+  .gantt-track-container {
+    height: 44px;
+    padding: 4px;
+  }
+
+  .gantt-block {
+    min-width: 52px;
+    font-size: 0.7rem;
+    border-radius: 6px;
+  }
+
+  /* Educational Cards Mobile */
+  .educational-section {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .edu-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .edu-card h3 {
+    font-size: 1rem;
+  }
+
+  .edu-card p {
+    font-size: 0.84rem;
+  }
+
+  .concept-flow-diagram {
+    padding: 10px;
+    gap: 4px;
+  }
+
+  .flow-step {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .flow-arrow {
+    font-size: 0.75rem;
+  }
+}
+
+/* Small Smartphone Screen Sizing (<= 380px) */
+@media (max-width: 380px) {
+  .user-card {
+    width: 124px;
+    padding: 6px 8px;
+  }
+
+  .cpu-node {
+    width: 118px;
+    height: 118px;
+  }
+
+  .quantum-ring-container {
+    top: -6px;
+    left: -6px;
+    width: 130px;
+    height: 130px;
+  }
+
+  .cpu-icon {
+    font-size: 22px;
+  }
+
+  .cpu-title {
+    font-size: 0.62rem;
+  }
+
+  .cpu-subtitle {
+    display: none;
+  }
+
+  .user-action-text {
+    font-size: 0.62rem;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+

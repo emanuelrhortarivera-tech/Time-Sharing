@@ -99,15 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- WEB AUDIO API SYNTHESIZER ---
   let audioCtx = null;
 
+  function initAudioOnUserGesture() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  document.addEventListener('touchstart', initAudioOnUserGesture, { once: true });
+  document.addEventListener('click', initAudioOnUserGesture, { once: true });
+
   function playContextSwitchSound(freq = 580, type = 'sine') {
     if (!state.soundEnabled) return;
     try {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      initAudioOnUserGesture();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = type;
@@ -125,8 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- SVG CONNECTION LINES DRAWING ---
   function updateConnectionLines() {
+    const stage = document.getElementById('stageContainer');
+    if (!stage || !cpuNode) return;
+
     const cpuRect = cpuNode.getBoundingClientRect();
-    const stageRect = document.getElementById('stageContainer').getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
 
     const cpuCenter = {
       x: cpuRect.left + cpuRect.width / 2 - stageRect.left,
@@ -148,6 +158,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('resize', updateConnectionLines);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(updateConnectionLines, 150);
+  });
+
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(updateConnectionLines);
+    });
+    const stageEl = document.getElementById('stageContainer');
+    if (stageEl) ro.observe(stageEl);
+  }
+
   setTimeout(updateConnectionLines, 100);
 
   // --- ANIMATED PACKET TRAJECTORIES ---
@@ -157,10 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
     packet.innerHTML = icon;
     packet.style.borderColor = color;
     packet.style.color = color;
-    packet.style.left = `${fromPos.x - 22}px`;
-    packet.style.top = `${fromPos.y - 22}px`;
 
     packetLayer.appendChild(packet);
+    const packetRadius = (packet.offsetWidth || 34) / 2;
+
+    packet.style.left = `${fromPos.x - packetRadius}px`;
+    packet.style.top = `${fromPos.y - packetRadius}px`;
 
     const startTime = performance.now();
 
@@ -176,8 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const currentX = fromPos.x + (toPos.x - fromPos.x) * easeProgress;
       const currentY = fromPos.y + (toPos.y - fromPos.y) * easeProgress;
 
-      packet.style.left = `${currentX - 22}px`;
-      packet.style.top = `${currentY - 22}px`;
+      packet.style.left = `${currentX - packetRadius}px`;
+      packet.style.top = `${currentY - packetRadius}px`;
 
       if (progress < 1.0) {
         requestAnimationFrame(stepPacket);

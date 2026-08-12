@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Time-Sharing OS Simulator - Servidor de Fotos</title>
+  <meta name="description" content="Demostración visual e interactiva del concepto de Time-Sharing (sistemas operativos de tiempo compartido) mediante un servidor de fotos.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="header-title-box">
+        <div class="header-icon-badge">⚡</div>
+        <div class="header-text">
+          <h1>Simulador de Time-Sharing</h1>
+          <p>Sistemas Operativos &bull; Algoritmo de Planificación Round-Robin</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="soundToggle" class="toggle-btn" title="Activar/desactivar efecto de sonido de conmutación">
+          <span id="soundIcon">🔊</span> <span class="btn-text">Audio: ON</span>
+        </button>
+        <button id="projectorToggle" class="toggle-btn" title="Modo Alto Contraste para Proyector">
+          📺 <span class="btn-text">Modo Proyector</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- System Dashboard & Live Metrics -->
+    <section class="metrics-strip">
+      <div class="metric-card">
+        <div class="metric-icon">🖥️</div>
+        <div class="metric-info">
+          <label>Estado del Sistema</label>
+          <div id="systemState" class="metric-value status-paused">PAUSADO</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⚙️</div>
+        <div class="metric-info">
+          <label>Proceso Actual</label>
+          <div id="activeUserMetric" class="metric-value">Esperando inicio...</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">👥</div>
+        <div class="metric-info">
+          <label>Usuarios Conectados</label>
+          <div class="metric-value">4 Usuarios</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-info">
+          <label>Intervalo CPU (Quantum)</label>
+          <div id="quantumMetric" class="metric-value">0.8 s</div>
+        </div>
+      </div>
+
+      <div class="metric-card span-full-mobile">
+        <div class="metric-icon">🔄</div>
+        <div class="metric-info">
+          <label>Ciclos Completados</label>
+          <div id="cyclesMetric" class="metric-value">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Interactive Stage (Central Server + Radial Users) -->
+    <main class="simulation-stage" id="stageContainer">
+
+      <!-- SVG Connection Lines -->
+      <svg class="connections-svg" id="connectionsSvg">
+        <line id="line1" class="connection-line" />
+        <line id="line2" class="connection-line" />
+        <line id="line3" class="connection-line" />
+        <line id="line4" class="connection-line" />
+      </svg>
+
+      <!-- Radial Stage Container -->
+      <div class="stage-grid" id="stageGrid">
+
+        <!-- Central Cloud Server / CPU Node -->
+        <div class="cpu-node" id="cpuNode">
+          <!-- Circular Quantum Progress SVG -->
+          <div class="quantum-ring-container">
+            <svg class="quantum-svg" viewBox="0 0 244 244">
+              <circle class="quantum-circle-bg" cx="122" cy="122" r="116"></circle>
+              <circle id="quantumCircleProgress" class="quantum-circle-progress" cx="122" cy="122" r="116"></circle>
+            </svg>
+          </div>
+
+          <div class="cpu-icon">☁️</div>
+          <div class="cpu-title">SERVIDOR DE FOTOS</div>
+          <div class="cpu-subtitle">CPU (PROCESADOR CENTRAL)</div>
+          <div class="cpu-serving-badge" id="cpuServingBadge">
+            <span>En Espera</span>
+          </div>
+        </div>
+
+        <!-- USER 1: Upload Photo -->
+        <div class="user-card" data-user="1" id="userCard1">
+          <div class="user-header">
+            <div class="user-title-group">
+              <div class="user-avatar">U1</div>
+              <div class="user-name">Usuario 1</div>
+            </div>
+            <div class="user-badge" id="badgeU1">ESPERA</div>
+          </div>
+          <div class="user-action-box">
+            <div class="user-action-icon">📤</div>
+            <div class="user-action-text">Subiendo una foto</div>
+          </div>
+          <div class="user-toast-message" id="toastU1">✓ Foto subida correctamente</div>
+        </div>
+
+        <!-- USER 2: Request Photo -->
+        <div class="user-card" data-user="2" id="userCard2">
+          <div class="user-header">
+            <div class="user-title-group">
+              <div class="user-avatar">U2</div>
+              <div class="user-name">Usuario 2</div>
+            </div>
+            <div class="user-badge" id="badgeU2">ESPERA</div>
+          </div>
+          <div class="user-action-box">
+            <div class="user-action-icon">🔍</div>
+            <div class="user-action-text">Solicitando una foto</div>
+          </div>
+          <div class="user-toast-message" id="toastU2">✓ Foto encontrada</div>
+        </div>
+
+        <!-- USER 3: Download Photo -->
+        <div class="user-card" data-user="3" id="userCard3">
+          <div class="user-header">
+            <div class="user-title-group">
+              <div class="user-avatar">U3</div>
+              <div class="user-name">Usuario 3</div>
+            </div>
+            <div class="user-badge" id="badgeU3">ESPERA</div>
+          </div>
+          <div class="user-action-box">
+            <div class="user-action-icon">📥</div>
+            <div class="user-action-text">Descargando una foto</div>
+          </div>
+          <div class="user-toast-message" id="toastU3">✓ Descarga completada</div>
+        </div>
+
+        <!-- USER 4: Delete Photo -->
+        <div class="user-card" data-user="4" id="userCard4">
+          <div class="user-header">
+            <div class="user-title-group">
+              <div class="user-avatar">U4</div>
+              <div class="user-name">Usuario 4</div>
+            </div>
+            <div class="user-badge" id="badgeU4">ESPERA</div>
+          </div>
+          <div class="user-action-box">
+            <div class="user-action-icon">🗑️</div>
+            <div class="user-action-text">Eliminando una foto</div>
+          </div>
+          <div class="user-toast-message" id="toastU4">✓ Foto eliminada</div>
+        </div>
+
+      </div>
+
+      <!-- Container for flying visual packet animations -->
+      <div id="packetLayer"></div>
+    </main>
+
+    <!-- Controls Panel -->
+    <section class="controls-panel">
+      <div class="controls-top-row">
+        <!-- Execution Action Buttons -->
+        <div class="control-buttons-group">
+          <button id="btnStart" class="btn-primary">
+            <span>▶</span> Iniciar Time-Sharing
+          </button>
+          <button id="btnPause" class="btn-secondary" disabled>
+            <span>⏸</span> Pausar
+          </button>
+          <button id="btnStep" class="btn-secondary" title="Avanzar 1 proceso (útil para la exposición)">
+            <span>⏭</span> Paso a Paso
+          </button>
+          <button id="btnReset" class="btn-danger">
+            <span>🔄</span> Reiniciar
+          </button>
+        </div>
+
+        <!-- Configuration Settings -->
+        <div class="settings-group">
+          <div class="setting-item">
+            <label for="quantumSlider">Intervalo de CPU:</label>
+            <div class="quantum-slider-container">
+              <input type="range" id="quantumSlider" min="0.3" max="2.5" step="0.1" value="0.8">
+              <span id="quantumValBadge" class="quantum-val-badge">0.8 s</span>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label>Velocidad:</label>
+            <div class="speed-selector">
+              <button class="speed-option" data-speed="0.5">Lenta</button>
+              <button class="speed-option active" data-speed="1.0">Normal</button>
+              <button class="speed-option" data-speed="2.0">Rápida</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CPU Gantt Chart / Timeline Logger -->
+    <section class="gantt-section">
+      <div class="gantt-header">
+        <h3>📊 Línea de Tiempo del CPU (Asignación por Quantum)</h3>
+        <div class="gantt-legend">
+          <div class="legend-item"><span class="legend-color" style="background: var(--color-u1)"></span> U1 (Subir)</div>
+          <div class="legend-item"><span class="legend-color" style="background: var(--color-u2)"></span> U2 (Buscar)</div>
+          <div class="legend-item"><span class="legend-color" style="background: var(--color-u3)"></span> U3 (Descargar)</div>
+          <div class="legend-item"><span class="legend-color" style="background: var(--color-u4)"></span> U4 (Eliminar)</div>
+        </div>
+      </div>
+
+      <div class="gantt-track-container" id="ganttTrack">
+        <!-- Live CPU execution blocks will be appended here -->
+      </div>
+    </section>
+
+    <!-- Educational Explanation & Concept Section -->
+    <section class="educational-section">
+      <div class="edu-card">
+        <h3>💡 ¿Qué está ocurriendo?</h3>
+        <p>
+          El CPU del servidor distribuye pequeños intervalos de tiempo (denominados <strong>Time Quanta</strong>) entre los procesos de diferentes usuarios. El cambio rápido de un usuario a otro genera la ilusión óptica y operativa de que todos están utilizando el servidor <strong>exactamente al mismo tiempo</strong>.
+        </p>
+        <div class="concept-flow-diagram">
+          <div class="flow-step">Usuario 1</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">CPU</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">Usuario 2</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">CPU</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">Usuario 3</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">CPU</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">Usuario 4</div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">🔄</div>
+        </div>
+      </div>
+
+      <div class="edu-card">
+        <h3>🔍 Conceptos Clave</h3>
+        <p>
+          &bull; <strong>Time-Sharing (Tiempo Compartido):</strong> Técnica donde el procesador reparte su tiempo de cálculo entre múltiples usuarios de forma secuencial.<br>
+          &bull; <strong>Algoritmo Round-Robin:</strong> Cada usuario recibe un turno equitativo en un ciclo continuo.<br>
+          &bull; <strong>Context Switch (Cambio de Contexto):</strong> Transición ultra-rápida que realiza el procesador para suspender un proceso y atender el siguiente.
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      Simulador de Sistemas Operativos &bull; Demostración Gráfica de Time-Sharing
+    </footer>
+
+  </div>
+
+  <!-- Application Logic JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
